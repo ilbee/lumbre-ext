@@ -7,11 +7,13 @@
 #include <stdarg.h>
 #include <stddef.h>
 #include <stdint.h>
+#include <stdlib.h>
 #include <setjmp.h>
 #include <cmocka.h>
 
 #include <string.h>
 #include <unistd.h>
+#include <sys/types.h>
 #include <sys/stat.h>
 
 #include "lumbre_ringbuf.h"

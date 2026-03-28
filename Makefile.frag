@@ -2,7 +2,7 @@
 # Provides the test-unit target for CMocka-based C unit tests.
 
 CMOCKA_FLAGS = -lcmocka
-UNIT_CFLAGS  = -std=c11 -Wall -Wextra -g -O0 -I$(srcdir)
+UNIT_CFLAGS  = -std=c11 -D_DEFAULT_SOURCE -Wall -Wextra -g -O0 -I$(srcdir)
 UNIT_LDFLAGS = $(CMOCKA_FLAGS)
 
 # Pure C modules (no PHP headers)
