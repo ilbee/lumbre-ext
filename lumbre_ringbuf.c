@@ -141,6 +141,12 @@ int lumbre_ringbuf_write(
     const void       *payload,
     uint32_t          payload_len)
 {
+    /* Guard against uint32_t overflow: 4 + payload_len must not wrap */
+    if (payload_len > rb->capacity - 4) {
+        __atomic_fetch_add(&rb->header->dropped, 1, __ATOMIC_RELAXED);
+        return -1;
+    }
+
     uint32_t needed = 4 + payload_len;  /* 4-byte length prefix + payload */
 
     /* Read consumer position (relaxed: stale value is safe, worst case we drop) */
