@@ -175,7 +175,9 @@ int lumbre_ringbuf_write(
     memcpy(&rb->data[offset], &payload_len, 4);
 
     /* Write payload */
-    memcpy(&rb->data[offset + 4], payload, payload_len);
+    if (payload_len > 0) {
+        memcpy(&rb->data[offset + 4], payload, payload_len);
+    }
 
     /* Advance local write position */
     rb->local_write_pos += needed;

@@ -123,7 +123,7 @@ int lumbre_msgpack_pack_str(lumbre_msgpack_buf *buf, const char *str,
         buf->pos += 4;
     }
 
-    if (len > 0) {
+    if (len > 0 && str != NULL) {
         memcpy(buf->buf + buf->pos, str, len);
         buf->pos += len;
     }
@@ -151,7 +151,7 @@ int lumbre_msgpack_pack_bin(lumbre_msgpack_buf *buf, const void *data,
         return -1;
     }
 
-    if (len > 0) {
+    if (len > 0 && data != NULL) {
         memcpy(buf->buf + buf->pos, data, len);
         buf->pos += len;
     }
