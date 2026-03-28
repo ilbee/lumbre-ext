@@ -221,6 +221,7 @@ static PHP_GINIT_FUNCTION(lumbre)
     ZEND_TSRMLS_CACHE_UPDATE();
 #endif
     memset(lumbre_globals, 0, sizeof(*lumbre_globals));
+    lumbre_whitelist_init(&lumbre_globals->whitelist);
 }
 
 /* --------------------------------------------------------------------------
@@ -230,9 +231,6 @@ static PHP_GINIT_FUNCTION(lumbre)
 static PHP_MINIT_FUNCTION(lumbre)
 {
     REGISTER_INI_ENTRIES();
-
-    /* Whitelist is per-globals but content is static — init here */
-    lumbre_whitelist_init(&LUMBRE_G(whitelist));
 
     /* Save original Zend handlers and install our hooks */
     lumbre_original_execute_internal = zend_execute_internal;
