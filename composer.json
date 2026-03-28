@@ -1,5 +1,5 @@
 {
-  "name": "lumbre/ext",
+  "name": "ilbee/lumbre-ext",
   "type": "php-ext",
   "description": "Low-overhead PHP tracing extension — SPSC ring buffer + msgpack spans",
   "license": "MIT",
