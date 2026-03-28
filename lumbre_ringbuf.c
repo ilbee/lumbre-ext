@@ -156,19 +156,20 @@ int lumbre_ringbuf_write(
 
     /* Wrap-around: message would straddle the end of the buffer */
     if (offset + needed > rb->capacity) {
-        /* Write padding marker at current offset */
-        uint32_t marker = LUMBRE_RINGBUF_PADDING_MARKER;
-        memcpy(&rb->data[offset], &marker, 4);
+        uint32_t pad_bytes = rb->capacity - offset;
 
-        /* Advance past the remaining space to wrap to offset 0 */
-        rb->local_write_pos += (uint64_t)(rb->capacity - offset);
-        offset = 0;
-
-        /* Re-check space after consuming padding bytes */
-        if ((rb->local_write_pos - read_pos) + needed > rb->capacity) {
+        /* Check that padding + message from offset 0 both fit BEFORE writing anything */
+        if ((rb->local_write_pos - read_pos) + pad_bytes + needed > rb->capacity) {
             __atomic_fetch_add(&rb->header->dropped, 1, __ATOMIC_RELAXED);
             return -1;
         }
+
+        /* Safe to write: place padding marker and wrap */
+        uint32_t marker = LUMBRE_RINGBUF_PADDING_MARKER;
+        memcpy(&rb->data[offset], &marker, 4);
+
+        rb->local_write_pos += (uint64_t)pad_bytes;
+        offset = 0;
     }
 
     /* Write length prefix (little-endian native) */
