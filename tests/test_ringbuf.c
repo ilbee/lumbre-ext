@@ -381,10 +381,18 @@ static void test_spsc_simulation(void **state)
     uint8_t payload[20];
     int total_written = 0;
 
-    /* Phase 1: Write N messages until buffer is near full */
+    /* Phase 1: Write N messages until buffer is near full.
+     * Stop BEFORE overflow so we don't increment the dropped counter. */
     int phase1_count = 0;
     for (int i = 0; i < 20; i++) {
         memset(payload, (uint8_t)(i + 1), sizeof(payload));
+        /* Peek: check if there's enough space before writing */
+        uint64_t wp = __atomic_load_n(&rb->header->write_pos, __ATOMIC_RELAXED);
+        uint64_t rp = __atomic_load_n(&rb->header->read_pos, __ATOMIC_ACQUIRE);
+        uint64_t used = wp - rp;
+        if (used + 4 + 20 > rb->capacity) {
+            break;  /* Would overflow — stop without attempting the write */
+        }
         int rc = lumbre_ringbuf_write(rb, payload, 20);
         if (rc == 0) {
             phase1_count++;
